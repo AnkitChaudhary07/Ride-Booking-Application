@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-// Mock data for available rides
+// Mock data for available rides with driver and car info
 const availableRides = [
   {
     id: "1",
@@ -73,9 +74,9 @@ const availableRides = [
 ];
 
 // RideOption component to display individual ride details
-const RideOption = ({ carType, estimatedFare, estimatedTime }) => {
+const RideOption = ({ carType, estimatedFare, estimatedTime, onPress }) => {
   return (
-    <TouchableOpacity style={styles.rideOption}>
+    <TouchableOpacity style={styles.rideOption} onPress={onPress}>
       <View style={styles.rideInfo}>
         {/* Car Type Icon */}
         <Ionicons
@@ -96,23 +97,67 @@ const RideOption = ({ carType, estimatedFare, estimatedTime }) => {
   );
 };
 
+// Detailed information for the selected ride
+const RideDetails = ({ selectedRide }) => {
+  const confirmRide = () => {
+    Alert.alert("Thank you", "Ride confirmed", [{ text: "OK" }]);
+  };
+  return (
+    <View style={styles.detailContainer}>
+      <Text style={styles.detailHeader}>Ride Details</Text>
+      <Text style={styles.detailText}>Car Type: {selectedRide.carType}</Text>
+      <Text style={styles.detailText}>Driver: Ankit</Text>
+      <Text style={styles.detailText}>Car Number: UK07 AC1287</Text>
+      <Text style={styles.detailText}>
+        Estimated Fare: {selectedRide.estimatedFare}
+      </Text>
+      <Text style={styles.detailText}>ETA: {selectedRide.estimatedTime}</Text>
+
+      {/* Confirm Ride Button */}
+      <TouchableOpacity style={styles.confirmButton} onPress={confirmRide}>
+        <Text style={styles.confirmButtonText}>Confirm Ride</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 // AvailableRidesList component to display all ride options using ScrollView
 const AvailableRidesList = () => {
+  const [selectedRide, setSelectedRide] = useState(null);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Available Rides</Text>
+      {/* If a ride is selected, show the ride details, otherwise show the list */}
+      {selectedRide ? (
+        <RideDetails selectedRide={selectedRide} />
+      ) : (
+        <>
+          <Text style={styles.headerText}>Available Rides</Text>
 
-      {/* Use ScrollView to display ride options */}
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {availableRides.map((item) => (
-          <RideOption
-            key={item.id}
-            carType={item.carType}
-            estimatedFare={item.estimatedFare}
-            estimatedTime={item.estimatedTime}
-          />
-        ))}
-      </ScrollView>
+          {/* Use ScrollView to display ride options */}
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {availableRides.map((item) => (
+              <RideOption
+                key={item.id}
+                carType={item.carType}
+                estimatedFare={item.estimatedFare}
+                estimatedTime={item.estimatedTime}
+                onPress={() => setSelectedRide(item)} // Set the selected ride when clicked
+              />
+            ))}
+          </ScrollView>
+        </>
+      )}
+
+      {/* Back Button to return to the list of rides */}
+      {selectedRide && (
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => setSelectedRide(null)}
+        >
+          <Text style={styles.backButtonText}>Back to Rides</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -159,6 +204,48 @@ const styles = StyleSheet.create({
   eta: {
     color: "#555",
     marginTop: 2,
+  },
+  detailContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 10,
+    padding: 20,
+  },
+  detailHeader: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  detailText: {
+    fontSize: 16,
+    marginVertical: 5,
+  },
+  backButton: {
+    borderWidth: 1,
+    borderColor: "#000000",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: "center",
+  },
+  backButtonText: {
+    color: "#000000",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  confirmButton: {
+    backgroundColor: "#000000", // Button color
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: "center",
+  },
+  confirmButtonText: {
+    color: "#fff", // Text color
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
