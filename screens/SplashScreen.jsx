@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   image: {
-    width: 350,
-    height: 350,
+    width: 300,
+    height: 300,
     resizeMode: "contain",
     borderRadius: 200,
   },
